@@ -5,7 +5,14 @@ class BudgetPartitionLayoutView extends Backbone.View
     initialize: ->
         @render()
         @codes = {}
-
+        
+    tipDirection: (d) ->
+        # If is "Hamedina" turn direction of tip to appear in bounds.
+        if d.c == "00"
+            return "w"
+        else
+            return "e"
+        
     render: ->
 
         @vis = d3.select(@el)
@@ -15,7 +22,7 @@ class BudgetPartitionLayoutView extends Backbone.View
                             .children((d) -> d.k)
         @change_tip = d3.tip()
                        .attr('class', 'd3-tip search-bar-tip')
-                       .direction("e")
+                       .direction(@tipDirection)
                        .offset((d) => [50,1])
                        .html((d) -> JST.searchbar_tooltip(d))
         @vis.call(@change_tip)
@@ -66,9 +73,9 @@ class BudgetPartitionLayoutView extends Backbone.View
         @selected_tooltip = ""
         @show_tip = (d) =>
             @selected_tooltip = d.c
-            if d.c == @root.c
-                @hide_tip()
-                return
+            #if d.c == @root.c
+            #    @hide_tip()
+            #    return
             @change_tip.show(d)
             if d.c.length > 6
                 @expandor.style('visibility','hidden')
@@ -90,7 +97,7 @@ class BudgetPartitionLayoutView extends Backbone.View
 
             window.setTimeout(
                 =>
-                    if d.c == @selected_tooltip
+                    if d.c == "00" || d.c== @selected_tooltip
                         bl = new window.models.BudgetItem(pageModel: window.pageModel)
                         bl.set('year',window.pageModel.get('year'))
                         bl.set('code',d.c)
